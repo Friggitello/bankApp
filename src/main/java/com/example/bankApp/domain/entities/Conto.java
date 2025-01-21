@@ -1,18 +1,27 @@
 package com.example.bankApp.domain.entities;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Check;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -24,18 +33,19 @@ import java.util.Set;
 @Table(name = "conto")
 @EntityListeners(AuditingEntityListener.class)
 public class Conto {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToMany(mappedBy = "conti")
-    private Set<Utente> utenti;
-    @Column(nullable = false, name = "costo_annuale")
-    @Check(constraints = "costo_annuale >= 0", name = "costo_conto_positive")
-    private Integer costoAnnuale;
+    @Check(constraints = "costo >= 0", name = "costo_conto_positive")
     @Column(nullable = false)
-    private Long saldo;
+    private Double costo;
+    @Column(nullable = false)
+    private Double saldo;
     @Column(nullable = false, name = "data_sottoscrizione")
     private LocalDate dataSottoscrizione;
+    @ManyToMany(mappedBy = "conti")
+    private Set<Utente> intestatari;
     @CreatedDate
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -44,8 +54,9 @@ public class Conto {
     private Long createdBy;
     @LastModifiedDate
     @Column(name = "last_modified_at")
-    private LocalDateTime lastModifyAt;
+    private LocalDateTime lastModifiedAt;
     @LastModifiedBy
     @Column(name = "last_modified_by")
     private Long lastModifiedBy;
+
 }

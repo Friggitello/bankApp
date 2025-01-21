@@ -1,7 +1,19 @@
 package com.example.bankApp.domain.entities;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Check;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -20,20 +32,21 @@ import java.time.LocalDateTime;
 @Table(name = "transazione")
 @EntityListeners(AuditingEntityListener.class)
 public class Transazione {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "id_conto_mittente_FK", nullable = false)
-    private Conto ContoMittente;
-    @ManyToOne
-    @JoinColumn(name = "id_conto_destinatario_FK", nullable = false)
-    private Conto ContoDestinatario;
-    @Column(nullable = false, name = "denaro_trasferito")
-    @Check(constraints = "denaro_trasferito > 0", name = "check_amount_positive") //vincolo direttamente nel codice senza farlo nel db
-    private Long denaroTrasferito;
-    @Column(nullable = false,name = "data_transazione")
-    private LocalDateTime dataTransazione;
+    @Check(constraints = "amount > 0", name = "check_amount_positive")
+    @Column(nullable = false)
+    private Double amount;
+    @Column(nullable = false)
+    private LocalDateTime timestamp;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "conto_mittente")
+    private Conto contoMittente;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "conto_destinatario")
+    private Conto contoDestinatario;
     @ManyToOne(optional = false)
     @JoinColumn(name = "utente_id")
     private Utente utente;
@@ -43,4 +56,5 @@ public class Transazione {
     @CreatedBy
     @Column(name = "created_by")
     private Long createdBy;
+
 }
